@@ -2,12 +2,29 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from .db import Base, engine, get_db
 from .models import Pet
 from .schemas import PetCreate, PetOut
 
 app = FastAPI(title="PawTrack API")
+
+# Allow requests from your frontend (Next.js)
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,     # who can access your API
+    allow_credentials=True,    # allow cookies / auth headers later
+    allow_methods=["*"],       # allow GET, POST, PUT, DELETE, etc.
+    allow_headers=["*"],       # allow all headers (Authorization etc.)
+)
+
 
 # ✅ Creates tables in PostgreSQL if they don't exist yet
 Base.metadata.create_all(bind=engine)
