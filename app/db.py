@@ -9,6 +9,13 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+# Validate DATABASE_URL exists
+if not DATABASE_URL:
+    raise ValueError(
+        "DATABASE_URL environment variable is not set. "
+        "Please create a .env file with DATABASE_URL=postgresql://..."
+    )
+
 # Engine = the connection "bridge" to PostgreSQL
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 

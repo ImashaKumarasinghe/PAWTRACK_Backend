@@ -8,6 +8,7 @@ class PetCreate(BaseModel):
     title: str = Field(..., min_length=3, max_length=150)
     species: str = Field(..., pattern="^(DOG|CAT)$")  # only DOG/CAT allowed
     description: Optional[str] = Field(None, max_length=500)
+    photo_url: Optional[str] = Field(None, max_length=500)  # Optional photo
 
     location_url: str = Field(..., max_length=500)
     location_text: Optional[str] = Field(None, max_length=150)
@@ -17,6 +18,7 @@ class PetOut(BaseModel):
     title: str
     species: str
     description: Optional[str]
+    photo_url: Optional[str]  # Optional photo
     location_url: str
     location_text: Optional[str]
     status: str

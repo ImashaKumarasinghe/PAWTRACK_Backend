@@ -12,9 +12,12 @@ from .schemas import PetCreate, PetOut
 app = FastAPI(title="PawTrack API")
 
 # Allow requests from your frontend (Next.js)
+# For development: allow all localhost/127.0.0.1 variations
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3001",  # alternative ports
+    "http://127.0.0.1:3001",
 ]
 
 app.add_middleware(
