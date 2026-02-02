@@ -15,6 +15,7 @@ class Pet(Base):
     title = Column(String(150), nullable=False)         # short title
     species = Column(String(10), nullable=False)        # "DOG" or "CAT"
     description = Column(String(500), nullable=True)    # optional
+    photo_url = Column(String(500), nullable=True)      # photo link (optional)
 
     location_url = Column(String(500), nullable=False)   # Google Maps link
     location_text = Column(String(150), nullable=True)   # Optional: "Near bus stop"
