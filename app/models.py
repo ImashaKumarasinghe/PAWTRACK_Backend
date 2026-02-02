@@ -16,8 +16,8 @@ class Pet(Base):
     species = Column(String(10), nullable=False)        # "DOG" or "CAT"
     description = Column(String(500), nullable=True)    # optional
 
-    latitude = Column(Float, nullable=False)            # map coordinate
-    longitude = Column(Float, nullable=False)           # map coordinate
+    location_url = Column(String(500), nullable=False)   # Google Maps link
+    location_text = Column(String(150), nullable=True)   # Optional: "Near bus stop"
 
     status = Column(String(10), default="AVAILABLE")    # AVAILABLE / SAVED
     created_at = Column(DateTime, default=datetime.utcnow)  # auto time
