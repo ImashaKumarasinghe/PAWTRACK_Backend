@@ -1,5 +1,5 @@
 # app/schemas.py
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
 
@@ -27,3 +27,28 @@ class PetOut(BaseModel):
     # Allows Pydantic to read SQLAlchemy objects
     class Config:
         from_attributes = True
+
+
+class UserRegister(BaseModel):
+    full_name: str = Field(..., min_length=3, max_length=150)
+    email: EmailStr
+    phone_number: str = Field(..., min_length=7, max_length=20)
+    password: str = Field(..., min_length=6, max_length=100)
+    confirm_password: str = Field(..., min_length=6, max_length=100)
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=6, max_length=100)
+
+class UserOut(BaseModel):
+    id: int
+    full_name: str
+    email: EmailStr
+    phone_number: str
+
+    class Config:
+        from_attributes = True
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
