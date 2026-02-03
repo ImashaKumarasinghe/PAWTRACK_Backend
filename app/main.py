@@ -4,10 +4,16 @@ from sqlalchemy.orm import Session
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 
+from .models import User
+from .schemas import UserRegister, UserLogin, UserOut, TokenOut
+from .auth_utils import hash_password, verify_password, create_access_token
+
 
 from .db import Base, engine, get_db
 from .models import Pet
 from .schemas import PetCreate, PetOut
+
+
 
 app = FastAPI(title="PawTrack API")
 
@@ -83,3 +89,51 @@ def save_pet(pet_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(pet)
     return pet
+
+#user part
+
+@app.post("/auth/register", response_model=UserOut)
+def register_user(payload: UserRegister, db: Session = Depends(get_db)):
+
+    # 1) confirm password check
+    if payload.password != payload.confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
+
+    # 2) check email already exists
+    existing = db.query(User).filter(User.email == payload.email).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Email already registered")
+
+    # 3) hash password
+    hashed = hash_password(payload.password)
+
+    # 4) create user row
+    user = User(
+        full_name=payload.full_name,
+        email=payload.email,
+        phone_number=payload.phone_number,
+        password_hash=hashed
+    )
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+#login route
+@app.post("/auth/login", response_model=TokenOut)
+def login_user(payload: UserLogin, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    # check password
+    if not verify_password(payload.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    # create JWT token (store user id + email)
+    token = create_access_token({"sub": str(user.id), "email": user.email})
+
+    return {"access_token": token, "token_type": "bearer"}
