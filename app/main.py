@@ -13,6 +13,7 @@ from .db import Base, engine, get_db
 from .models import Pet
 from .schemas import PetCreate, PetOut
 
+from .auth_dep import get_current_user_id
 
 
 app = FastAPI(title="PawTrack API")
@@ -76,10 +77,13 @@ def get_pet(pet_id: int, db: Session = Depends(get_db)):
     return pet
 
 @app.post("/pets/{pet_id}/save", response_model=PetOut)
-def save_pet(pet_id: int, db: Session = Depends(get_db)):
+def save_pet(
+    pet_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+):
     """
-    Mark pet as SAVED.
-    Later we will link this to a user account.
+    Only logged-in users can save pets.
     """
     pet = db.query(Pet).filter(Pet.id == pet_id).first()
     if not pet:
@@ -89,6 +93,7 @@ def save_pet(pet_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(pet)
     return pet
+
 
 #user part
 
