@@ -1,4 +1,5 @@
 # app/main.py
+from datetime import datetime
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
@@ -81,6 +82,7 @@ def save_pet(
     pet_id: int,
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id),
+    
 ):
     """
     Only logged-in users can save pets.
@@ -89,9 +91,11 @@ def save_pet(
     if not pet:
         raise HTTPException(status_code=404, detail="Pet not found")
 
-    pet.status = "SAVED"
+    pet.status = "ADOPTED"
+    pet.adopted_at = datetime.utcnow()
     db.commit()
     db.refresh(pet)
+    
     return pet
 
 
