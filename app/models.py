@@ -2,6 +2,11 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from datetime import datetime
 from .db import Base
+from sqlalchemy import DateTime
+from datetime import datetime
+
+adopted_at = Column(DateTime, nullable=True)
+
 
 class Pet(Base):
     """
