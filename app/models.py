@@ -1,32 +1,28 @@
 # app/models.py
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
 from .db import Base
-from sqlalchemy import DateTime
-from datetime import datetime
-
-adopted_at = Column(DateTime, nullable=True)
 
 
 class Pet(Base):
     """
-    This class becomes a PostgreSQL table called 'pets'.
-    Each attribute = a column in the table.
+    PostgreSQL table: pets
     """
     __tablename__ = "pets"
 
-    id = Column(Integer, primary_key=True, index=True)  # auto id
+    id = Column(Integer, primary_key=True, index=True)
 
-    title = Column(String(150), nullable=False)         # short title
-    species = Column(String(10), nullable=False)        # "DOG" or "CAT"
-    description = Column(String(500), nullable=True)    # optional
-    photo_url = Column(String(500), nullable=True)      # photo link (optional)
+    title = Column(String(150), nullable=False)
+    species = Column(String(10), nullable=False)  # DOG / CAT
+    description = Column(String(500), nullable=True)
+    photo_url = Column(String(500), nullable=True)
 
-    location_url = Column(String(500), nullable=False)   # Google Maps link
-    location_text = Column(String(150), nullable=True)   # Optional: "Near bus stop"
+    location_url = Column(String(500), nullable=False)
+    location_text = Column(String(150), nullable=True)
 
-    status = Column(String(10), default="AVAILABLE")    # AVAILABLE / SAVED
-    created_at = Column(DateTime, default=datetime.utcnow)  # auto time
+    status = Column(String(10), default="AVAILABLE")  # AVAILABLE / ADOPTED
+    created_at = Column(DateTime, default=datetime.utcnow)
+    adopted_at = Column(DateTime, nullable=True)  # ✅ moved INSIDE Pet
 
 
 class User(Base):
