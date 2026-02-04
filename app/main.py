@@ -13,6 +13,8 @@ from .schemas import (
 from .auth_utils import hash_password, verify_password, create_access_token
 from .db import Base, engine, get_db
 from .auth_dep import get_current_user_id
+from .bot_knowledge import FAQ
+
 
 app = FastAPI(title="PawTrack API")
 
@@ -136,3 +138,36 @@ def login_user(payload: UserLogin, db: Session = Depends(get_db)):
 
     token = create_access_token({"sub": str(user.id), "email": user.email})
     return {"access_token": token, "token_type": "bearer"}
+
+@app.post("/chat")
+def chat_bot(payload: dict, db: Session = Depends(get_db)):
+    """
+    Free rule-based chatbot endpoint.
+    Expects: { "message": "text..." }
+    Returns: { "reply": "text..." }
+    """
+    message = (payload.get("message") or "").lower().strip()
+
+    if not message:
+        return {"reply": "Please type a message 😊"}
+
+    # ✅ DB-powered answers (live info)
+    if "available" in message and ("pets" in message or "pet" in message):
+        count = db.query(Pet).filter(Pet.status == "AVAILABLE").count()
+        return {"reply": f"Right now, there are {count} pets available on PawTrack 🐾"}
+
+    if "adopted" in message:
+        count = db.query(Pet).filter(Pet.status == "ADOPTED").count()
+        return {"reply": f"So far, {count} pets have been adopted 🎉"}
+
+    # ✅ Rule-based FAQ answers
+    for item in FAQ:
+        for tag in item["tags"]:
+            if tag in message:
+                return {"reply": item["answer"]}
+
+    # ✅ fallback
+    return {
+        "reply": "I can help with: registration, login, adoption, reporting pets, and map location. Try asking: 'How to adopt?'"
+    }
+
